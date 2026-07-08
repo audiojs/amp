@@ -1,7 +1,7 @@
 {
   "name": "@audio/amp-cabinet",
   "version": "1.0.0",
-  "description": "Cabinet simulation — measured-IR convolution (pair with @audio/measure-ir) or classical speaker-sim biquads",
+  "description": "Cabinet simulation \u2014 measured-IR convolution (pair with @audio/measure-ir) or classical speaker-sim biquads",
   "type": "module",
   "sideEffects": false,
   "main": "cabinet.js",
@@ -13,7 +13,7 @@
     "cabinet.js"
   ],
   "dependencies": {
-    "@audio/reverb-convolution": "file:../../../reverb/packages/reverb-convolution",
+    "@audio/reverb-convolution": "^1.0.0",
     "digital-filter": "^2.0.0"
   },
   "keywords": [

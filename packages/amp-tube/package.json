@@ -1,7 +1,7 @@
 {
   "name": "@audio/amp-tube",
   "version": "1.0.0",
-  "description": "Tube amp stage — highpass → oversampled tube saturation → bass/mid/treble tone stack → level",
+  "description": "Tube amp stage \u2014 highpass \u2192 oversampled tube saturation \u2192 bass/mid/treble tone stack \u2192 level",
   "type": "module",
   "sideEffects": false,
   "main": "tube.js",
@@ -13,7 +13,7 @@
     "tube.js"
   ],
   "dependencies": {
-    "@audio/saturate-tube": "file:../../../saturate/packages/saturate-tube",
+    "@audio/saturate-tube": "^1.0.0",
     "digital-filter": "^2.0.0"
   },
   "keywords": [
