@@ -3,7 +3,7 @@
 // closed-back 12" cab: 70 Hz highpass, low bump, presence peak, steep rolloff above ~4.5 kHz.
 
 import convolve from '@audio/reverb-convolution'
-import { lowpass, highpass, peaking } from 'digital-filter/iir/biquad.js'
+import { lowpass, highpass, peaking } from '@audio/biquad'
 
 function biquadRun (data, c) {
 	let x1 = 0, x2 = 0, y1 = 0, y2 = 0

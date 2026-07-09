@@ -3,7 +3,7 @@
 // Classical composition model (no circuit simulation; NAM-class capture = @audio/neural-amp).
 
 import saturate from '@audio/saturate-tube'
-import { lowshelf, highshelf, peaking } from 'digital-filter/iir/biquad.js'
+import { lowshelf, highshelf, peaking } from '@audio/biquad'
 
 function biquadRun (data, c) {
 	let x1 = 0, x2 = 0, y1 = 0, y2 = 0
