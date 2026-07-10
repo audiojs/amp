@@ -1,6 +1,6 @@
 {
   "name": "@audio/amp-cabinet",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Cabinet simulation — measured-IR convolution (pair with @audio/measure-ir) or classical speaker-sim biquads",
   "type": "module",
   "sideEffects": false,

@@ -1,6 +1,6 @@
 {
   "name": "@audio/amp-tube",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Tube amp stage — highpass → oversampled tube saturation → bass/mid/treble tone stack → level",
   "type": "module",
   "sideEffects": false,
