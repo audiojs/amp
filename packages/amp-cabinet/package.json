@@ -1,6 +1,6 @@
 {
   "name": "@audio/amp-cabinet",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Cabinet simulation — measured-IR convolution (pair with @audio/measure-ir) or classical speaker-sim biquads",
   "type": "module",
   "sideEffects": false,
@@ -16,7 +16,8 @@
   "files": [
     "cabinet.js",
     "audio.js",
-    "audio.d.ts"
+    "audio.d.ts",
+    "cabinet.d.ts"
   ],
   "dependencies": {
     "@audio/reverb-convolution": "^1.0.0",
@@ -42,5 +43,7 @@
     "type": "git",
     "url": "git+https://github.com/audiojs/amp.git",
     "directory": "packages/amp-cabinet"
-  }
+  },
+  "funding": "https://github.com/sponsors/audiojs",
+  "types": "cabinet.d.ts"
 }

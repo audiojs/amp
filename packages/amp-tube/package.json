@@ -1,6 +1,6 @@
 {
   "name": "@audio/amp-tube",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Tube amp stage — highpass → oversampled tube saturation → bass/mid/treble tone stack → level",
   "type": "module",
   "sideEffects": false,
@@ -16,7 +16,8 @@
   "files": [
     "tube.js",
     "audio.js",
-    "audio.d.ts"
+    "audio.d.ts",
+    "tube.d.ts"
   ],
   "dependencies": {
     "@audio/saturate-tube": "^1.0.0",
@@ -42,5 +43,7 @@
     "type": "git",
     "url": "git+https://github.com/audiojs/amp.git",
     "directory": "packages/amp-tube"
-  }
+  },
+  "funding": "https://github.com/sponsors/audiojs",
+  "types": "tube.d.ts"
 }
