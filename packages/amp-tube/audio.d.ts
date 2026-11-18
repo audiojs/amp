@@ -27,7 +27,8 @@ export interface AmpOptions {
 export declare const amp: {
   (ctx: Ctx): Process
   channels: "any"
-  streaming: false
+  latency: 20
+  tail: (at: { sampleRate: number, params: Live, buffers: {} }) => number
   params: {
     /** 0..1 (default 0.5) */
     "gain": { type: "number", default: 0.5 }

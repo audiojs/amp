@@ -17,9 +17,10 @@ export interface CabinetOptions {
 }
 
 export declare const cabinet: {
-  (ctx: Ctx): Process
+  (ctx: Ctx & { buffers: { "ir": Float32Array[] | undefined } }): Process
   channels: "any"
-  streaming: false
+  buffers: {"ir":{"channels":1}}
+  tail: (at: { sampleRate: number, params: Live, buffers: { "ir": Float32Array[] | undefined } }) => number
   params: {
     /** 0..1 (default 1) */
     "mix": { type: "number", default: 1 }
