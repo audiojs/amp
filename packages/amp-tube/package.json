@@ -18,13 +18,13 @@
   },
   "files": [
     "tube.js",
-    "oversample.js",
     "audio.js",
     "audio.d.ts",
     "tube.d.ts"
   ],
   "dependencies": {
-    "@audio/saturate-tube": "^1.0.0",
+    "@audio/saturate-tube": "^1.1.0",
+    "@audio/resample-sinc": "^1.4.0",
     "@audio/biquad": "^1.1.0"
   },
   "keywords": [

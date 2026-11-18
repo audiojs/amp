@@ -4,8 +4,12 @@
 
 import saturate from '@audio/saturate-tube'
 import { lowshelf, highshelf, peaking, process as biquad } from '@audio/biquad'
-import { oversampler, up, down } from './oversample.js'
-export { LATENCY, RING } from './oversample.js'
+import { oversampler, up, down } from '@audio/resample-sinc'
+
+// @audio/resample-sinc's 4× oversampler, on the arithmetic @audio/saturate-tube's whole call resamples with: LATENCY,
+// the samples the streaming form's output is late (the whole call reads that far ahead), and RING, the samples the
+// oversampler moves past that once its input stops
+export const { latency: LATENCY, ring: RING } = oversampler(4, 0)
 
 /**
  * @param {Float32Array} data — mono PCM, processed in place
@@ -30,7 +34,7 @@ export default function amp (data, { fs = 44100, gain = 0.5, bass = 0, mid = 0, 
 
 /** State for stream() at `fs`: calls of up to `maxBlockSize` samples */
 export function state (maxBlockSize, fs = 44100) {
-	let s = oversampler(maxBlockSize)
+	let s = oversampler(4, maxBlockSize)
 	s.hp = new Float64Array(1)                    // the input highpass's lowpass
 	s.c = new Float64Array(15)                    // tone stack: low shelf, peaking, high shelf, b0 b1 b2 a1 a2 each
 	s.z = new Float64Array(6)                     // and two accumulators each

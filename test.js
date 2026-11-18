@@ -5,6 +5,7 @@ import { amp as ampAtom } from '@audio/amp-tube/audio'
 import { chain } from '@audio/amp-cabinet'
 import { lowshelf, highshelf, peaking } from '@audio/biquad'
 import { readFileSync } from 'node:fs'
+import { oversampler } from '@audio/resample-sinc'
 
 const fs = 44100
 
@@ -156,10 +157,11 @@ test('cabinet manifest: an IR in direct form, bit for bit, in calls of any size'
 })
 
 test('amp manifest: the kernel\'s whole call LATENCY samples late, bit for bit, in calls of any size', () => {
-	// The whole call's tube stage (@audio/saturate-tube) reads 20 samples ahead of each output, which a stream cannot:
-	// it is that late instead (oversample.js). 64 zeros on each side keep the whole call's ends, where resample()
-	// divides by the taps it has, off the signal; the input highpass rings into the zeros at the end, so the last 20
-	// samples are left out. A tone gain of 0 skips its section in the whole call and passes through it streaming
+	// The whole call's tube stage (@audio/saturate-tube) reads LATENCY samples ahead of each output, which a stream
+	// cannot: it is that late instead (@audio/resample-sinc's oversampler). 64 zeros on each side keep the whole call's
+	// ends, where resample() divides by the taps it has, off the signal; the input highpass rings into the zeros at the
+	// end, so the last LATENCY samples are left out. A tone gain of 0 skips its section in the whole call and passes
+	// through it streaming
 	let L = ampAtom.latency ?? 0, seed = 5, rand = () => (seed = (seed * 16807) % 2147483647) / 2147483647
 	for (let [k, sr] of [44100, 48000, 96000, 22050, 44100].entries()) {
 		let set = {}
@@ -169,7 +171,7 @@ test('amp manifest: the kernel\'s whole call LATENCY samples late, bit for bit, 
 		let ref = x.map(c => tube(Float32Array.from(c.subarray(0, c.length - L)), { fs: sr, ...set })), diff = 0
 		for (let block of BLOCKS) {
 			let y = host(ampAtom, x, { sr, block, set })
-			for (let c = 0; c < 2; c++) for (let i = 0; i < ref[c].length - 20; i++) if (!Object.is(y[c][i + L], ref[c][i])) diff++
+			for (let c = 0; c < 2; c++) for (let i = 0; i < ref[c].length - L; i++) if (!Object.is(y[c][i + L], ref[c][i])) diff++
 		}
 		is(diff, 0, `${sr} Hz, ${Object.entries(set).map(([n, v]) => `${n} ${+v.toFixed(2)}`).join(', ')}: samples that differ`)
 	}
@@ -275,13 +277,14 @@ test('manifests: a value that scales the signal is glided: a host\'s ramp of it 
 	// its value at the old gain, s the largest step of m between two frames of the host's line; margin 1.1 for what of
 	// the curve is not its slope at that level.
 	// From the glide's end (the ramp's N frames, then 32: it plays the host's line 32 frames late), the render at the new
-	// value, bit for bit: level and mix at once, gain after the oversampler's 8 samples (the tone stack at 0 dB passes it
-	// as it is). Before the glide each was one step of the whole change (×91 to ×318 at 220 Hz)
-	let n = fs * 3 / 4, N = Math.round(0.02 * fs), seed = 9, u = () => (seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296
+	// value, bit for bit: level and mix at once, gain `reach` samples on, as far as the points a sample shapes reach the
+	// output (@audio/resample-sinc's oversampler: to its latency; the tone stack at 0 dB passes it as it is). Before the
+	// glide each was one step of the whole change (×91 to ×318 at 220 Hz)
+	let n = fs * 3 / 4, N = Math.round(0.02 * fs), seed = 9, u = () => (seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 4294967296, reach = oversampler(4, 0).latency
 	let G = g => { let d = 1 + 7 * Math.fround(g); return d / Math.cosh(0.25 * d) ** 2 / Math.tanh(1.25 * d) }
 	const ROWS = [
 		// processor, the change, its law (or 'mix'), input level, frames past the line before the render at the new value
-		[ampAtom, { gain: 0.75 }, G, 1e-3, 8], [ampAtom, { level: 0.75 }, v => Math.fround(v), 0.5, 0], [cabinetAtom, { mix: 0.75 }, 'mix', 0.5, 0],
+		[ampAtom, { gain: 0.75 }, G, 1e-3, reach], [ampAtom, { level: 0.75 }, v => Math.fround(v), 0.5, 0], [cabinetAtom, { mix: 0.75 }, 'mix', 0.5, 0],
 	]
 	for (let [m, to, law, A, settle] of ROWS) for (let f of [220, 1000]) for (let at of [22016, 22063]) {
 		let k = Object.keys(to)[0], base = { [k]: 0.25 }, buffers = m === cabinetAtom ? IR : undefined, label = `${m.name}.${k} 0.25 → ${to[k]}, ${f} Hz, at ${at}`

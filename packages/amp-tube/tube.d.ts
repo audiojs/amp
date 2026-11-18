@@ -22,13 +22,13 @@ export default function amp(data: Float32Array, options?: AmpTubeOptions): Float
 /** A number as a host gives a processor its values: a 1-length array. */
 export type Value = ArrayLike<number>
 
-/** State of `stream`: the highpass's, the oversampler's and the tone stack's, and the rate and gains designed for. */
-export interface AmpTubeState { x: Float32Array; hi: Float32Array; y: Float32Array; dry: Float32Array; hp: Float64Array; c: Float64Array; z: Float64Array; at: Float64Array }
+/** State of `stream`: the highpass's, @audio/resample-sinc's 4× oversampler and the tone stack's, and the rate and gains designed for. */
+export type AmpTubeState = import('@audio/resample-sinc').Oversampler & { hp: Float64Array; c: Float64Array; z: Float64Array; at: Float64Array }
 
 /** Samples the streaming form's output is late: the whole call's tube stage reads that far ahead. */
-export declare const LATENCY: 20
+export declare const LATENCY: 31
 /** Samples the tube stage's oversampler still moves once its input stops, past LATENCY (the filters ring on). */
-export declare const RING: 19
+export declare const RING: 31
 
 /** State for `stream` at `fs` (default 44100), for calls of up to `maxBlockSize` samples. */
 export function state(maxBlockSize: number, fs?: number): AmpTubeState

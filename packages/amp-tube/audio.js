@@ -1,5 +1,5 @@
 // atom manifest — tube amp stage (input HP → oversampled tube saturation →
-// bass/mid/treble tone stack → level). Streaming: the 4× oversampler (oversample.js)
+// bass/mid/treble tone stack → level). Streaming: the 4× oversampler (@audio/resample-sinc's)
 // carries its input from call to call, so the output is LATENCY samples late; the
 // highpass and the tone stack keep their state. Every param is live. gain and level scale
 // the signal with nothing behind them, so each is smoothed (20 ms) and glided sample by
@@ -8,7 +8,7 @@
 // stack, its state kept: smoothed, each call of a host's ramp retunes it a step.
 
 import { lowshelf, highshelf, peaking } from '@audio/biquad'
-import { oversampler, up, down } from './oversample.js'
+import { oversampler, up, down } from '@audio/resample-sinc'
 import { stream, state, LATENCY, RING } from './tube.js'
 
 export const amp = (ctx) => {
@@ -43,7 +43,7 @@ amp.tail = ({ sampleRate: fs, params }) => {
 	if (!(G > 0)) return 0
 	// c: the oversampler's response (the tube stage as identity) through the tone stack, until the stack's state is 200
 	// dB under its largest
-	let o = oversampler(1), one = new Float32Array(1), secs = [lowshelf(120, 0.707, fs, params.bass[0]), peaking(650, 0.9, fs, params.mid[0]), highshelf(3200, 0.707, fs, params.treble[0])]
+	let o = oversampler(4, 1), one = new Float32Array(1), secs = [lowshelf(120, 0.707, fs, params.bass[0]), peaking(650, 0.9, fs, params.mid[0]), highshelf(3200, 0.707, fs, params.treble[0])]
 	let z = new Float64Array(6), c = [], top = 0
 	for (let k = 0; k < 1 << 22; k++) {
 		one[0] = k ? 0 : 1
