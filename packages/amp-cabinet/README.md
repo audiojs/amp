@@ -10,7 +10,7 @@ npm install @audio/amp-cabinet
 import cabinet from '@audio/amp-cabinet'
 ```
 
-With an `ir` (capture your own with `@audio/measure-ir`), convolves through `@audio/reverb-convolution` (`normalize: true`, so output level tracks input level regardless of the IR's own loudness) — the accurate path. Without one, a fixed classical speaker-sim biquad chain approximates a closed-back 12" cab: 70 Hz highpass, a low-mid bump, a presence peak around 2.4 kHz, and a steep rolloff above ~4.5 kHz.
+With an `ir` (capture your own with `@audio/measure-ir`), convolves through `@audio/reverb-convolution` (`normalize: true`, so output level tracks input level regardless of the IR's own loudness) — the accurate path. Without one, a fixed classical speaker-sim biquad chain approximates a closed-back 12" cab: 70 Hz highpass, a low-mid bump, a presence peak around 2.4 kHz, and a steep rolloff above ~4.5 kHz. A section's frequency is held at 0.49 of the sample rate (past Nyquist its poles leave the unit circle), so at 8 kHz the rolloff sits at 3.92 kHz.
 
 ```js
 cabinet(data, { fs: 44100 })                              // biquad approximation, no IR

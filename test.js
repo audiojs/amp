@@ -103,6 +103,18 @@ test('cabinet manifest: without an IR, the kernel\'s biquad chain, bit for bit, 
 	}
 })
 
+// The chain's 4.5 and 5.2 kHz lowpasses sit past Nyquist at rates under 10.4 kHz, where their poles leave the unit
+// circle: audio's stream suite (8 kHz) read NaN from frame 142 of a 300 Hz tone. Held at 0.49 of the rate, every section
+// is stable and the output finite, the kernel's and the processor's alike
+test('cabinet: without an IR, stable at every rate; each section\'s poles inside the unit circle, the output finite', () => {
+	for (let sr of [8000, 11025, 16000, 22050, 44100, 192000]) {
+		ok(chain(sr).every(c => radius(c) < 1), `${sr} Hz: every pole inside the unit circle (largest ${Math.max(...chain(sr).map(radius)).toFixed(4)})`)
+		let x = Float32Array.from({ length: sr }, (_, i) => 0.4 * Math.sin(2 * Math.PI * 300 * i / sr))
+		ok(cabinet(x.slice(), { fs: sr }).every(Number.isFinite), `${sr} Hz: the kernel's output finite`)
+		ok(host(cabinetAtom, [x], { sr }).every(c => c.every(Number.isFinite)), `${sr} Hz: the processor's output finite`)
+	}
+})
+
 test('cabinet manifest: without an IR, the tail is the chain\'s slowest pole falling 60 dB', () => {
 	// a pole of radius r falls 60 dB in ln(1000) / -ln(r) samples (J. O. Smith, Introduction to Digital Filters,
 	// https://ccrma.stanford.edu/~jos/filters/); the chain's sections are the kernel's

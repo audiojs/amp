@@ -5,14 +5,19 @@
 import convolve from '@audio/reverb-convolution'
 import { lowpass, highpass, peaking, process as biquad } from '@audio/biquad'
 
-/** The biquad chain's sections at `fs`, in order */
-export const chain = fs => [
-	highpass(70, 0.707, fs),
-	peaking(110, 1, fs, 2),
-	peaking(2400, 1.2, fs, 3),
-	lowpass(4500, 0.707, fs),
-	lowpass(5200, 0.707, fs),
-]
+/** The biquad chain's sections at `fs`, in order, each frequency held at 0.49 of the rate: past Nyquist a section's
+ *  poles leave the unit circle (the 4.5 and 5.2 kHz lowpasses at rates under 10.4 kHz wrote NaN), the rule every
+ *  /audio processor of @audio/filter and @audio/eq keeps */
+export const chain = fs => {
+	const at = f => Math.min(f, fs * 0.49)
+	return [
+		highpass(at(70), 0.707, fs),
+		peaking(at(110), 1, fs, 2),
+		peaking(at(2400), 1.2, fs, 3),
+		lowpass(at(4500), 0.707, fs),
+		lowpass(at(5200), 0.707, fs),
+	]
+}
 
 /**
  * @param {Float32Array} data — mono PCM, processed in place

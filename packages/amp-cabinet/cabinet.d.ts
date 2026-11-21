@@ -14,7 +14,7 @@ export default function cabinet(data: Float32Array, options?: CabinetOptions): F
 /** A biquad section, normalized (a0 = 1), as `@audio/biquad` makes it. */
 export interface Section { b0: number; b1: number; b2: number; a1: number; a2: number }
 
-/** The biquad chain's sections at `fs`, in order: 70 Hz highpass, 110 Hz bump, 2.4 kHz peak, 4.5 and 5.2 kHz lowpasses. */
+/** The biquad chain's sections at `fs`, in order: 70 Hz highpass, 110 Hz bump, 2.4 kHz peak, 4.5 and 5.2 kHz lowpasses, each frequency held at 0.49 of `fs`. */
 export function chain(fs: number): Section[]
 
 /** A number as a host gives a processor its values: a 1-length array. */
